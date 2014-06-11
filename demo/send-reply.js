@@ -8,7 +8,6 @@ var obj = {
 	text: "Hello!\n\nThis is my email message.",
 	inReplyTo: process.argv[2]
 };
-console.log(process.argv[2]);
 
 // Send the reply
 mailer.sendMail(obj, function(err, status) {
