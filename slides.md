@@ -1,3 +1,8 @@
+<style>
+pre strong { color: black; }
+pre { color: #789; }
+</style>
+
 # Node.js + Email
 
 
@@ -34,7 +39,9 @@ Not an expert, not thorough coverage
 
 ## Slides
 
+<section class="slide">
 Created with [Markdown] and [Bedecked]
+</section>
 
 All **code examples** extracted from working scripts/files
 
@@ -272,17 +279,20 @@ connecting to: emaildb
 
 Not specific to Gmail - could be any mail service w/ IMAP or POP3 support
 
-* 
+* might be more robust than relying on your node.js application to handle SMTP
 
 
 
 ## Postfix + Dovecot
 
+### ... i.e. running your own mail + IMAP server.
+
+<br>
+
 I'm going to skip this one ...  But a couple of thoughts on it:
 
 * more complicated - two extra serves, both requiring configuration
-
-
+* same code as using an email service with IMAP
 
 
 ## SMTP with node.js
@@ -337,9 +347,13 @@ server.listen(port, function() {
 
 ## Module Summary
 
-### simplesmtp &rarr; SMTP server, protocol
+<br>
 
-### mailparser &rarr; handles the actual message, MIME, encoding
+### simplesmtp &rarr; <span style="color: gray">SMTP server, protocol</span>
+
+<br>
+
+### mailparser &rarr; <span style="color: gray">handles the actual message, MIME, encoding</span>
 
 
 ## SMTP Session
@@ -383,11 +397,65 @@ Send a simple message, show the JSON for the message body
 * `send-email-1.js` + `server-2.js`
 
 
-## Processing replies
+# Replies
 
-- InReplyTo
-- Subject - "Re:"
-- specified - "To:" address
+
+## Send a reply
+
+A simple script to reply to an email:
+
+<pre><code>
+var mailer = require('./emailer');
+
+// Construct the email
+var obj = {
+	to: 'Bob <bob@example.com>',
+	from: 'Alice <alice@example.com>',
+	subject: "Test Message",
+	text: "Hello!\n\nThis is my email message.",
+	<strong>inReplyTo: process.argv[2]</strong>
+};
+
+// Send the reply
+mailer.sendMail(obj, function(err, status) {
+	console.log("Sent reply");
+	process.exit()
+});
+</code></pre>
+
+Example usage:
+
+    node send-reply.js 1402449977942.3aed41b7@Nodemailer 
+
+
+## Saving the Reply
+
+<pre>
+function handleReq(req) {
+	// Interesting mail handling code ...	
+	var mailparser = new MailParser();
+	mailparser.on('end', function(mail) {
+		
+		// Look up the original message
+		query = { messageId: mail.inReplyTo };
+		Email.findOne(query, function(err, orig) {
+			if (err || orig == undefined) {
+				console.error("Could not find original email");	
+				return req.reject()
+			}
+			// Save the reply, with the thread set	
+			reply = new Email(mail);
+			reply.thread = orig.thread;
+
+			reply.save(function(err) {
+				console.log("Saved reply to DB");
+				req.accept();
+			})
+		});
+	});
+	req.pipe(mailparser);
+}
+</pre>
 
 
 # Attachments
@@ -396,10 +464,14 @@ Send a simple message, show the JSON for the message body
 ## Outgoing emails
 
 
+
 ## Incoming emails
 
 
-## Email forwarding
+# Email forwarding
+
+
+## Envelope Sender
 
 Change the actual recipient in the **SMTP Envelope**.
 
@@ -419,6 +491,36 @@ See:
 
 * [Email forwarding - Wikipedia](http://en.wikipedia.org/wiki/Email_forwarding)
 * [Bounce address - Wikipedia](http://en.wikipedia.org/wiki/Bounce_address)
+
+
+## Bouncing the message
+
+<pre>
+function handleReq(req) {
+	// Prevent recursion for this contrived example ...
+	if (req.to[0] === 'charlie@example.com') {
+		console.log("Got message for charlie");
+		return;
+	}
+
+    // Interesting mail handling code ...	
+	var	mailparser = new MailParser();
+		mailparser.on('end', function(mail) {
+			// Forward the message
+			mail.envelope = {
+				to: "charlie@example.com"
+			};
+
+			mailer.sendMail(mail);
+
+			console.log("Forwarded message to charlie");
+
+			req.accept();
+		});
+		req.pipe(mailparser);
+}
+</pre>
+
 
 
 # DevOps
