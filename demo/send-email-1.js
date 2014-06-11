@@ -1,5 +1,3 @@
-#!/usr/bin/node
-
 // Set up the SMTP mailer
 var nodemailer = require('nodemailer');
 var opts = {
