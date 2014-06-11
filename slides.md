@@ -40,7 +40,12 @@ Implementation & EDA at AMD
 
 Backpacked around the world for 3.5 years
 
+* Oct 2002 - April 2006
 * PHP, MySQL
+
+http://mytravelpages.net/matt/
+
+* site is old and SLOW
 
 
 ## Freelance & Consulting
@@ -79,9 +84,7 @@ https://taskbump.com
 
 ## Slides
 
-<section class="slide">
-Created with Markdown and (a hacked version of ) Bedecked
-</section>
+Created with [Markdown](http://en.wikipedia.org/wiki/Markdown) and (a hacked version of) [Bedecked](https://github.com/jtrussell/bedecked)
 
 All **code examples** extracted from working scripts/files
 
@@ -224,16 +227,14 @@ var EmailSchema = new Schema({
 	to: Mixed,
 	from: Mixed,
 	subject: String,
-	<div style="border: 5px solid red; padding: 0px; margin: 0px;">
-	msgid: {
+	<strong>msgid: {
 		type: String,
 		index: true
 	},
 	thread: {
 		type: ObjectId,
 		index: true,
-	},
-    </div>
+	},</strong>
 	created: { type: Date, default: Date.now }
 };
 </pre>
@@ -278,13 +279,13 @@ mailer.sendMail(obj, function(err, status) {
 	// FIXME: Add some error handling ...
 
 	// Create the DB object, set the Message-ID, and save it
-	var email = new Email(obj);
+	<strong>var email = new Email(obj);
 	email.msgid = status.messageId;
 	email.thread = new ObjectId;
 	email.save(function(err) {
 		console.log("Saved new email to DB");
 		process.exit()
-	});
+	});</strong>
 });
 ```
 
@@ -342,21 +343,17 @@ var port = 8300;
 var simplesmtp = require('simplesmtp');
 var MailParser = require("mailparser").MailParser;
 
-var opts = {
-  SMTPBanner: "Test Email Server"
-};
-
 function handleReq(req) {
-  // Interesting mail handling code ...	
-	var	mailparser = new MailParser();
-		mailparser.on('end', function(mail) {
-			console.log(mail);
-			req.accept();
-		});
-		req.pipe(mailparser);
+	// Interesting mail handling code ...	
+	<strong>var mailparser = new MailParser();
+	mailparser.on('end', function(mail) {
+		console.log(mail);
+		req.accept();
+	});
+	req.pipe(mailparser);</strong>
 }
 
-server = simplesmtp.createSimpleServer(opts, handleReq);
+server = simplesmtp.createSimpleServer({}, handleReq);
 server.listen(port, function() {
   console.log("Email server running on port " + port);
 });
@@ -376,7 +373,8 @@ server.listen(port, function() {
 
 ## SMTP Session
 
-```
+<div class="slide">
+<pre>
 $ telnet localhost 8300
 Trying 127.0.0.1...
 Connected to localhost.
@@ -400,8 +398,27 @@ This is a test
 quit
 221 2.0.0 Goodbye!
 Connection closed by foreign host.
-```
+</pre>
+</div>
 See: http://en.wikipedia.org/wiki/SMTP#SMTP_transport_example
+
+
+## Domain/User Validation
+
+Reject emails that aren't addressed to us.
+<pre>
+function handleReq(req) {
+	// Assuming one recipient, for simplicity's sake
+	recipient = req.to[0];
+	<strong>
+	// Check the domain of the recipient
+	if (!recipient.match(/@mydomain\.com$/)) {
+		console.log("Invalid recipient: " + recipient);
+		req.reject("Invalid recipient domain");
+	}</strong>
+}
+</pre>
+We could also check the part before the `@`, and/or look up users in a database.
 
 
 ## Examples
@@ -414,6 +431,10 @@ Send a simple message, show the JSON for the message body
 
 * `send-email-1.js` + `server-2.js`
 
+Send a simple message, reject using domain validation
+
+* `send-email-1.js` + `server-5.js`
+
 
 # Other Options
 
@@ -423,6 +444,8 @@ Send a simple message, show the JSON for the message body
 Not specific to Gmail - could be any mail service w/ IMAP or POP3 support
 
 * might be more robust than relying on your node.js application to handle SMTP
+
+See: https://github.com/mscdex/node-imap
 
 
 ## Postfix + Dovecot
@@ -475,7 +498,7 @@ function handleReq(req) {
 	// Interesting mail handling code ...	
 	var mailparser = new MailParser();
 	mailparser.on('end', function(mail) {
-
+		<strong>
 		// Look up the original message
 		query = { messageId: mail.inReplyTo };
 		Email.findOne(query, function(err, orig) {
@@ -491,7 +514,7 @@ function handleReq(req) {
 				console.log("Saved reply to DB");
 				req.accept();
 			})
-		});
+		});</strong>
 	});
 	req.pipe(mailparser);
 }
@@ -519,11 +542,9 @@ Change the actual recipient in the **SMTP Envelope**.
 email = {
     from: "alice@example.com",
     to: "replies@example.com",
-    <div style="border: 5px solid red">
-    envelope: {
+    <strong>envelope: {
         to: "bob@example.com"
-    }
-    </div>
+    }</strong>
 }
 </pre>
 
@@ -543,21 +564,21 @@ function handleReq(req) {
 		return;
 	}
 
-    // Interesting mail handling code ...	
-	var	mailparser = new MailParser();
-		mailparser.on('end', function(mail) {
-			// Forward the message
-			mail.envelope = {
-				to: "charlie@example.com"
-			};
+	// Interesting mail handling code ...	
+	var mailparser = new MailParser();
+	mailparser.on('end', function(mail) {
+		<strong>// Forward the message
+		mail.envelope = {
+			to: "charlie@example.com"
+		};
 
-			mailer.sendMail(mail);
+		mailer.sendMail(mail);
+		</strong>
+		console.log("Forwarded message to charlie");
 
-			console.log("Forwarded message to charlie");
-
-			req.accept();
-		});
-		req.pipe(mailparser);
+		req.accept();
+	});
+	req.pipe(mailparser);
 }
 </pre>
 
@@ -582,7 +603,7 @@ listen smtp 127.0.0.1:25
 	server smtp1 127.0.0.1:8300 check
 	server smtp2 127.0.0.1:8301 check
 ```
-See: [TODO: Add link]
+See: http://www.linickx.com/645/load-balance-anything-with-haproxy
 
 
 ## Spam
@@ -597,7 +618,18 @@ See: [TODO: Add link]
 
 ## Mailin
 
+<img src="/images/mailin.png">
+
+http://mailin.io
+
 
 ## Haraka
 
 <img src="/images/haraka.png">
+
+http://haraka.github.io/
+
+
+# End / Questions?
+
+
