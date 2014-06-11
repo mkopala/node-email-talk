@@ -8,30 +8,70 @@ pre { color: #789; }
 
 ## About Me
 
+<br>
+<center style="font-size: 50px">
 Matt Kopala
+<br>
+<br>
+[@mkopala](http://twitter.com/#!/mkopala)
+<br>
+<br>
+[http://mattkopala.com](http://mattkopala.com)
+</center>
 
-picture in Namibia
 
-whereinthehellismatt.com
+## Microprocessor Designer
 
-picture, Red X, "He's cooler than me"
+<div style="float: right">
+<img src="images/opteron.jpg" />
+Credit: http://www.logan.com/sun/opteron/
+</div>
+
+Implementation & EDA at AMD
+
+* Verilog
+* Perl, Tcl/TK
 
 
-PHP, now node.js
 
-backpacked for 3.5 years: 2003 - 2006
+## World Travel
 
-* Freelance developer & consultant
-* Founder of TaskBump : [https://taskbump.com]
+<img align="right" src="images/travel-map.png" />
 
-Other
+Backpacked around the world for 3.5 years
 
-GitHub
+* PHP, MySQL
 
-* [@mkopala](http://twitter.com/#!/mkopala)
-* [http://mattkopala.com](http://mattkopala.com)
 
-Not an expert, not thorough coverage
+## Freelance & Consulting
+
+<div style="float: right">
+<img src="images/freelance.jpg" />
+Credit: http://geekyduck.com/tag/freelance
+</div>
+
+* node.js, 
+* CoffeeScript
+* MongoDB, MySQL
+
+
+
+## TaskBump
+
+<img align="right" src="images/taskbump-logo.png" />
+
+Founder of TaskBump 
+
+* node.js
+* CoffeeScript
+* MongoDB
+* jQuery
+* Backbone
+
+<center style="font-size: 50px">
+https://taskbump.com
+</center>
+
 
 
 # Overview 
@@ -40,7 +80,7 @@ Not an expert, not thorough coverage
 ## Slides
 
 <section class="slide">
-Created with [Markdown] and [Bedecked]
+Created with Markdown and (a hacked version of ) Bedecked
 </section>
 
 All **code examples** extracted from working scripts/files
@@ -51,6 +91,10 @@ Error handling is **minimal** or **non-existant**
 
 * to keep things short
 * because I was too lazy to add it
+
+Disclaimers
+
+* I'm <b>not an expert</b> on any of this stuff!
 
 
 ## Goals
@@ -70,8 +114,6 @@ How many of you have:
     - save file
     - raw SMTP
 - used transaction email (SES, Gmail, Mailgun, Mandrill)
-
-
 
 
 ## Email headers
@@ -105,17 +147,13 @@ NodeMailer - http://www.nodemailer.com/
 
     npm install nodemailer
 
-
-<!--
 The same author (Andris Reinman) has written these other **node.js** email-related modules:
 
 * simplesmtp
 * mail-parser
 * mimelib
-* dkim-signer, inbox, directmail, ...
 
-(We'll cover)
--->
+The example code uses these ...
 
 
 ## Send a message
@@ -275,26 +313,6 @@ connecting to: emaildb
 # Receiving Email
 
 
-## Gmail + IMAP/POP3
-
-Not specific to Gmail - could be any mail service w/ IMAP or POP3 support
-
-* might be more robust than relying on your node.js application to handle SMTP
-
-
-
-## Postfix + Dovecot
-
-### ... i.e. running your own mail + IMAP server.
-
-<br>
-
-I'm going to skip this one ...  But a couple of thoughts on it:
-
-* more complicated - two extra serves, both requiring configuration
-* same code as using an email service with IMAP
-
-
 ## SMTP with node.js
 
 We can use **simplesmtp** to set up a simple SMTP server with node:
@@ -397,6 +415,28 @@ Send a simple message, show the JSON for the message body
 * `send-email-1.js` + `server-2.js`
 
 
+# Other Options
+
+
+## Gmail + IMAP/POP3
+
+Not specific to Gmail - could be any mail service w/ IMAP or POP3 support
+
+* might be more robust than relying on your node.js application to handle SMTP
+
+
+## Postfix + Dovecot
+
+### ... i.e. running your own mail + IMAP server.
+
+<br>
+
+I'm going to skip this one ...  But a couple of thoughts on it:
+
+* more complicated - two extra serves, both requiring configuration
+* same code as using an email service with IMAP
+
+
 # Replies
 
 
@@ -435,7 +475,7 @@ function handleReq(req) {
 	// Interesting mail handling code ...	
 	var mailparser = new MailParser();
 	mailparser.on('end', function(mail) {
-		
+
 		// Look up the original message
 		query = { messageId: mail.inReplyTo };
 		Email.findOne(query, function(err, orig) {
