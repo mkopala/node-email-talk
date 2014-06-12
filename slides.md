@@ -300,12 +300,7 @@ module.exports = transport;
 
 Send the message & save the `Message-ID`:
 
-```
-var mongoose = require('mongoose');
-var schema = require('./schema');
-var Email = schema.Email;
-var mailer = require('./emailer');
-
+<pre>
 // Construct the email
 var obj = {
 	to: 'Bob <bob@example.com>',
@@ -317,9 +312,9 @@ var obj = {
 // Send it
 mailer.sendMail(obj, function(err, status) {
 	// FIXME: Add some error handling ...
-
+	<strong>
 	// Create the DB object, set the Message-ID, and save it
-	<strong>var email = new Email(obj);
+	var email = new Email(obj);
 	email.msgid = status.messageId;
 	email.thread = new ObjectId;
 	email.save(function(err) {
@@ -327,14 +322,15 @@ mailer.sendMail(obj, function(err, status) {
 		process.exit()
 	});</strong>
 });
-```
+</pre>
 
 
 ## Check MongoDB collection
 
+<div class="slide">
 Check for our email object in MongoDB:
 
-```
+<pre>
 $ mongo emaildb
 MongoDB shell version: 2.4.10
 connecting to: emaildb
@@ -348,7 +344,8 @@ connecting to: emaildb
 	"created" : ISODate("2014-06-11T00:36:36.928Z"),
 	"__v" : 0
 }
-```
+</pre>
+</div>
 
 
 # Receiving Email
@@ -373,6 +370,7 @@ server.listen(port, function() {
   console.log("Email server running on port " + port);
 });
 ```
+Demo: `node server-1.js`
 
 
 ## Email body handling
@@ -398,6 +396,7 @@ server.listen(port, function() {
   console.log("Email server running on port " + port);
 });
 </pre>
+Demo: `node server-2.js`
 
 
 ## Module Summary
@@ -460,20 +459,7 @@ function handleReq(req) {
 </pre>
 We could also check the part before the `@`, and/or look up users in a database.
 
-
-## Examples
-
-Send a simple message, show the JSON for the SMTP exchange
-
-* `send-email-1.js` + `server-1.js`
-
-Send a simple message, show the JSON for the message body
-
-* `send-email-1.js` + `server-2.js`
-
-Send a simple message, reject using domain validation
-
-* `send-email-1.js` + `server-5.js`
+Demo: `node server-5.js`
 
 
 # Other Options
@@ -665,6 +651,9 @@ http://mailin.io
 <img src="/images/haraka.png">
 
 http://haraka.github.io/
+
+
+# Demo
 
 
 # End / Questions?
