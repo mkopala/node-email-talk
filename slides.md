@@ -653,6 +653,14 @@ http://mailin.io
 http://haraka.github.io/
 
 
+## Further Reading
+
+* [Sending e-mails with Node and NodeMailer - How To Node - NodeJS](http://howtonode.org/sending-e-mails-with-node-and-nodemailer)
+* [node.js knockout, Sending email from node.js](http://blog.nodeknockout.com/post/34641712180/sending-email-from-node-js)
+* [DailyJS: Node Tutorial Part 14: Email](http://dailyjs.com/2011/02/21/node-tutorial-14/)
+* [Cloud Spinners Development Blog: Sending and Receiving Email using Mandrill](http://dev-blog.cloud-spinners.com/2014/03/sending-and-receiving-email-using.html)
+
+
 # Demo
 
 
